@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 270" fill="none">
+ <ellipse cx="241" cy="241" rx="174" ry="12" fill="#CBD4C5" opacity=".45"/>
+ <circle cx="241" cy="126" r="108" fill="#DCE3D4"/>
+ <path d="M106 54v8m-4-4h8M377 112v10m-5-5h10M327 34v8m-4-4h8" stroke="#98AA92" stroke-width="1.5"/>
+ <circle cx="133" cy="120" r="3" fill="#A4B59A"/><circle cx="350" cy="178" r="3" fill="#A4B59A"/>
+ <path d="M361 222c-1-34 3-65 14-97m-11 67c-29-5-29-24-25-36 19 7 28 19 25 36Zm4-24c21-4 33-19 31-35-24 8-33 19-31 35Zm6-38c-6-18-2-32 9-42 10 19 5 31-9 42Z" fill="#6F8B6D" stroke="#6F8B6D" stroke-width="2"/>
+ <path d="M349 211h32l-5 28h-22l-5-28Z" fill="#C89874"/><path d="M345 209h40v8h-40z" fill="#D6AA89"/>
+ <g transform="rotate(-12 129 186)"><rect x="104" y="71" width="43" height="162" rx="3" fill="#B87853"/><path d="M111 77v147m6-132h21m-21 5h21m-21 107h21m-21 5h21" stroke="#E5B58C" stroke-width="2"/><path d="M126 112v75" stroke="#DFB18A"/><path d="m122 146 4-6 4 6-4 6-4-6Z" fill="#DFB18A"/></g>
+ <g transform="rotate(-5 177 172)"><rect x="149" y="94" width="48" height="139" rx="3" fill="#DBC6A0"/><path d="M156 98v130m10-112h22m-22 4h22m-22 88h22m-22 4h22" stroke="#B19A73" stroke-width="1.5"/><path d="M177 143c-14 10-14 24 0 32 14-8 14-22 0-32Z" stroke="#B19A73"/><path d="M177 141v35" stroke="#B19A73"/></g>
+ <rect x="205" y="190" width="132" height="35" rx="3" fill="#275548"/>
+ <path d="M210 196h118v23H210z" fill="#EDE4D3"/><path d="M217 203h110m-110 6h110m-110 6h110" stroke="#D1C6B0"/>
+ <path d="M205 190h132v5H205m0 25h132v5H205" fill="#275548"/>
+ <rect x="195" y="224" width="145" height="16" rx="3" fill="#B87954"/><path d="M203 229h130v6H203z" fill="#EBE0CA"/>
+ <g transform="rotate(10 250 133)"><rect x="203" y="41" width="101" height="147" rx="4" fill="#3B6855"/><path d="M213 47v135" stroke="#274F40" stroke-width="3"/><rect x="223" y="54" width="70" height="121" rx="33" stroke="#A7B68C"/><path d="M258 72v79m0-28c-17 0-24-10-24-18 15 0 24 8 24 18Zm0-17c16 0 23-10 23-18-14 1-23 9-23 18Zm0 35c17 0 24-11 24-18-15 0-24 9-24 18Z" stroke="#A7B68C" stroke-width="1.5"/><path d="m258 157-4 5 4 5 4-5-4-5Z" fill="#A7B68C"/></g>
+ <path d="M305 64c6-5 12-5 18 0m-9 0c6-5 12-5 18 0" stroke="#859777" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

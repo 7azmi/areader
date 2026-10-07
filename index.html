@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#234e43">
+    <meta name="description" content="رِواق، مساحة هادئة لقراءة الكتب العربية. مكتبة من كتب التراث، وتجربة قراءة صُممت لك.">
+    <title>رِواق — مساحة للقراءة</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+    <script src="vendor/marked.min.js" defer></script>
+    <script src="vendor/purify.min.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">انتقل إلى المحتوى</a>
+    <div id="app"><div class="initial-loader"><span>رِواق</span><p>نهيّئ لك مساحة للقراءة…</p></div></div>
+    <dialog id="modal" aria-labelledby="modal-title"></dialog>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <input id="import-file" type="file" accept=".md,.markdown,text/markdown,text/plain" hidden>
+  </body>
+</html>
