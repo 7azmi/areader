@@ -217,3 +217,4 @@ To refresh source texts, install `beautifulsoup4` and run
 `python3 scripts/import_classics.py`. This changes bundled editions; review their
 content and attribution before publishing. Third-party licenses are included
 alongside the fonts and vendored libraries.
+
