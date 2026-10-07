@@ -137,16 +137,6 @@ class OcrTests(unittest.TestCase):
         with self.assertRaisesRegex(ConversionError,"truncated"):
             convert_page(ring,b"page",2,args,fake_request([result(finish="length")]),log=lambda *a,**k:None)
 
-    def test_retry_log_includes_safe_response_rejection_reason(self):
-        clock=Clock();ring=KeyRing(["key"],clock.time,clock.sleep);logs=[]
-        convert_page(
-            ring,b"page",2,ARGS,
-            fake_request([result("نص عربي",finish="content_filter"),result()]),
-            log=lambda message,**_kwargs:logs.append(message),
-        )
-        self.assertTrue(any("content_filter" in message for message in logs))
-        self.assertFalse(any("نص عربي" in message for message in logs))
-
     def test_credit_failure_does_not_try_other_keys(self):
         calls=[];clock=Clock();ring=KeyRing(["key-A","key-B"],clock.time,clock.sleep)
         with self.assertRaisesRegex(ConversionError,"insufficient credits"):

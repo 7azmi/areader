@@ -233,11 +233,11 @@ def convert_page(ring: KeyRing, image: bytes, page_number: int, args, request_fn
             markdown = validate_markdown(text, page_number)
             slot.available_at = ring.clock() + args.delay
             return markdown, usage
-        except ConversionError as error:
+        except ConversionError:
             if attempt >= args.retries:
                 raise
             ring.sleep(min(30, 2 ** attempt))
-            log(f"  OCR response rejected ({error}); retrying.", flush=True)
+            log("  Incomplete OCR; retrying with the next available key.", flush=True)
         except OpenRouterError as error:
             if error.status in (401, 403):
                 slot.disabled = True

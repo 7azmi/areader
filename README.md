@@ -180,24 +180,20 @@ the app.
 
 ## Deploy to GitHub Pages
 
-The workflow in `.github/workflows/pages.yml` deploys automatically when code is
-pushed to the repository's default branch (or can be started with **Actions →
-Deploy to GitHub Pages → Run workflow**). The first time, open **Settings → Pages**
-and set **Build and deployment → Source** to **GitHub Actions**.
+Riwaq is a static site and needs no build workflow. In the repository, open
+**Settings → Pages**, select **Deploy from a branch**, choose the default branch and
+`/(root)`, then save. The site is published at the URL shown on that settings page.
 
-The workflow deliberately stages only `index.html`, `styles.css`, `app.js`,
-`.nojekyll`, `assets/`, `vendor/`, and the public catalog/books in `books/`. It does
-not put `private/`, `scripts/`, conversion outputs/checkpoints, or tests in the
-Pages deployment artifact. Keep private books and credentials out of Git commits as
-well; a public repository can expose committed files even if Pages doesn't deploy
-them.
+Keep `.nojekyll` at the repository root: the reader fetches the `.md` files in
+`books/` directly, and Jekyll would otherwise convert them during branch publishing.
+GitHub Pages serves the files committed on the selected branch, so keep private
+books, conversion outputs, and credentials untracked. `.gitignore` helps prevent
+accidental commits but does not hide files that are already tracked.
 
 The **أضف كتابك** button imports `.md`/`.markdown` files directly in the browser.
 Imported text is stored in that browser's IndexedDB and is never uploaded by the
-reader; it does not sync between browsers or devices. The local import feature also
-works on the HTTPS Pages site. The app uses relative asset paths and works under a
-GitHub project subpath. The same allowlisted public files can be published to any
-static HTTPS host.
+reader; it does not sync between browsers or devices. The site uses relative paths
+and works from a GitHub project subpath.
 
 ## Project layout
 
@@ -208,7 +204,7 @@ books/                          Markdown classics + catalog and attribution
 vendor/                         Pinned Marked and DOMPurify distributions
 serve.py                        Allowlisted local preview server
 scripts/import_classics.py      Development-only Wikisource importer
-private/books/                  Local source PDF placeholder; never served
+private/books/                  Local source files; do not commit private books
 scripts/pdf_to_md.py            Page-image OCR via OpenRouter; resumable
 tests/                          Browser and Python checks
 ```
@@ -217,4 +213,3 @@ To refresh source texts, install `beautifulsoup4` and run
 `python3 scripts/import_classics.py`. This changes bundled editions; review their
 content and attribution before publishing. Third-party licenses are included
 alongside the fonts and vendored libraries.
-

@@ -6,6 +6,5 @@ __pycache__/
 *.pyc
 *.conversion/
 node_modules/
-_site/
 private/books/*.pdf
 private/converted/

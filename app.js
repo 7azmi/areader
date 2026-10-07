@@ -51,7 +51,7 @@ try {
   state.settings.size = Math.max(20, Math.min(34, Number(state.settings.size) || 25));
   state.settings.goal = Math.max(5, Math.min(60, Number(state.settings.goal) || 15));
 } catch { state = cloneDefaults(); }
-let catalog = [], imported = [], books = [], db, dbFailure = null, currentBook = null, currentMarkdown = '', currentChapters = [], currentChapter = 0;
+let catalog = [], imported = [], books = [], db, currentBook = null, currentMarkdown = '', currentChapters = [], currentChapter = 0;
 let view = 'library', category = 'الكل', query = '', listView = false, toastTimer, searchTimer, saveTimer;
 let focusMode = false, readerPosition = 0, selectedQuote = '', lastActivity = Date.now(), lastReadingTick = Date.now();
 let currentAnchors = [], lastKnownAnchor = null;
@@ -77,35 +77,14 @@ function findBook(id) {return books.find(book => book.id === id);}
 
 async function openDatabase() {
   return new Promise((resolve,reject) => {
-    let settled=false,request,timeout;
-    const finish=(callback,value) => {
-      if (settled) return;
-      settled=true;clearTimeout(timeout);callback(value);
-    };
-    timeout=setTimeout(() => {
-      const error=new Error('Timed out opening local book storage');error.name='TimeoutError';
-      finish(reject,error);
-    },10000);
-    try {request=indexedDB.open('riwaq-books',1);}
-    catch (error) {finish(reject,error);return;}
-    request.onupgradeneeded=() => {
-      if (!request.result.objectStoreNames.contains('books')) request.result.createObjectStore('books',{keyPath:'id'});
-    };
-    request.onblocked=() => {
-      const error=new Error('Close another Riwaq tab, then reload this page');error.name='BlockedError';
-      finish(reject,error);
-    };
-    request.onsuccess=() => {
-      const database=request.result;
-      if (settled) {database.close();return;}
-      database.onversionchange=() => database.close();
-      finish(resolve,database);
-    };
-    request.onerror=() => finish(reject,request.error || new Error('Could not open local book storage'));
+    const request = indexedDB.open('riwaq-books', 1);
+    request.onupgradeneeded = () => request.result.createObjectStore('books', {keyPath:'id'});
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
   });
 }
 async function dbOperation(method, value) {
-  if (!db) throw dbFailure || new Error('Storage unavailable');
+  if (!db) throw new Error('Storage unavailable');
   return new Promise((resolve,reject) => {
     const transaction = db.transaction('books', method === 'getAll' ? 'readonly' : 'readwrite');
     const store = transaction.objectStore('books');
@@ -113,8 +92,8 @@ async function dbOperation(method, value) {
     let result;
     request.onsuccess = () => { result = request.result; };
     transaction.oncomplete = () => resolve(result);
-    transaction.onerror = () => reject(transaction.error || request.error || new Error('Local storage transaction failed'));
-    transaction.onabort = () => reject(transaction.error || request.error || new Error('Local storage transaction aborted'));
+    transaction.onerror = () => reject(transaction.error);
+    transaction.onabort = () => reject(transaction.error || new Error('Storage transaction aborted'));
   });
 }
 
@@ -362,13 +341,7 @@ async function importBook(file) {
     await dbOperation('put',book);
     imported.push(book);books=[...catalog,...imported];state.favorites.push(book.id);saveState();
     view='my';query='';category='الكل';renderLibrary();showDetails(book.id);toast('أُضيف كتابك. محفوظ على جهازك فقط.');
-  } catch (error) {
-    console.error('Import failed',error);
-    if (error?.name === 'QuotaExceededError') toast('مساحة تخزين المتصفح غير كافية. حرّر مساحة أو جرّب ملفًا أصغر.');
-    else if (error?.name === 'SecurityError' || error?.name === 'NotAllowedError') toast('المتصفح يمنع التخزين لهذا الموقع. أوقف التصفح الخاص واسمح بتخزين بيانات الموقع.');
-    else if (error?.name === 'BlockedError' || error?.name === 'TimeoutError') toast('التخزين المحلي عالق في تبويب آخر. أغلق تبويبات رِواق وأعد تحميل الصفحة.');
-    else toast(`تعذّر حفظ الكتاب (${error?.name || 'خطأ تخزين'}). أعد تحميل الصفحة؛ إذا تكرر الخطأ أرسل هذا الاسم.`);
-  }
+  } catch (error) {console.error('Import failed',error);toast('تعذّر حفظ الكتاب. تأكد من إتاحة التخزين ومساحة الجهاز.');}
   finally {$('#import-file').value='';}
 }
 
@@ -491,37 +464,15 @@ setInterval(() => {
 
 async function init() {
   try {
-    const controller=new AbortController();
-    const timeout=setTimeout(() => controller.abort(),15000);
-    let loadedCatalog;
-    try {
-      const response=await fetch(toAppUrl('books/catalog.json'),{signal:controller.signal});
-      if (!response.ok) {
-        const error=new Error('Catalog unavailable');error.status=response.status;throw error;
-      }
-      loadedCatalog=await response.json();
-    }
-    finally {clearTimeout(timeout);}
-    catalog=loadedCatalog;
-    try {db=await openDatabase();dbFailure=null;imported=await dbOperation('getAll');}
-    catch (error) {
-      dbFailure=error;db?.close();db=null;
-      console.warn('Local book storage unavailable:',error?.name || 'UnknownError');
-      if (error?.name === 'BlockedError' || error?.name === 'TimeoutError') toast('التخزين المحلي عالق في تبويب آخر. أغلق تبويبات رِواق وأعد تحميل الصفحة.');
-      else if (error?.name === 'SecurityError' || error?.name === 'NotAllowedError') toast('المتصفح يمنع التخزين لهذا الموقع. اسمح بتخزين بيانات الموقع لإضافة الكتب.');
-      else toast(`التخزين المحلي غير متاح (${error?.name || 'خطأ تخزين'}). يمكنك القراءة، لكن لا يمكن حفظ كتب.`);
-    }
+    const response=await fetch(toAppUrl('books/catalog.json'));if (!response.ok) throw new Error('Catalog unavailable');
+    catalog=await response.json();
+    try {db=await openDatabase();imported=await dbOperation('getAll');}catch {toast('التخزين المحلي غير متاح. يمكنك قراءة المكتبة، لكن لا يمكن إضافة كتب.');}
     books=[...catalog,...imported];renderLibrary();
     const id=location.hash.match(/^#read\/(.+)$/)?.[1];
     if (id && findBook(decodeURIComponent(id))) await openReader(decodeURIComponent(id),undefined,false);
   } catch (error) {
     console.error('Startup failed',error);
-    const message=error?.name === 'AbortError'
-      ? 'انتهت مهلة تحميل فهرس الكتب. تحقق من اتصال الموقع ثم أعد المحاولة.'
-      : error?.status
-        ? `تعذّر تحميل فهرس الكتب (HTTP ${error.status}). تأكد من نشر books/catalog.json بجانب الصفحة.`
-        : 'تعذّر تحميل فهرس الكتب. تأكد من نشر مجلد books بجانب الصفحة ثم أعد المحاولة.';
-    $('#app').innerHTML=`<main class="initial-loader"><span>رِواق</span><p>${message}</p><p><button class="secondary-button" data-action="retry-startup">إعادة المحاولة</button></p></main>`;
+    $('#app').innerHTML=`<main class="initial-loader"><span>رِواق</span><p>تعذّر فتح المكتبة. شغّل التطبيق عبر خادم ويب، ثم أعد المحاولة.</p><p><button class="secondary-button" data-action="retry-startup">إعادة المحاولة</button></p></main>`;
   }
 }
 init();
