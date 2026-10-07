@@ -6,11 +6,16 @@
     <meta name="theme-color" content="#234e43">
     <meta name="description" content="رِواق، مساحة هادئة لقراءة الكتب العربية. مكتبة من كتب التراث، وتجربة قراءة صُممت لك.">
     <title>رِواق — مساحة للقراءة</title>
-    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-    <link rel="stylesheet" href="styles.css">
-    <script src="vendor/marked.min.js" defer></script>
-    <script src="vendor/purify.min.js" defer></script>
-    <script src="app.js" defer></script>
+    <script>
+      if (location.pathname !== '/' && !location.pathname.endsWith('/') && !/\.[^/]+$/.test(location.pathname)) {
+        location.replace(`${location.pathname}/${location.search}${location.hash}`);
+      }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./vendor/marked.min.js" defer></script>
+    <script src="./vendor/purify.min.js" defer></script>
+    <script src="./app.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">انتقل إلى المحتوى</a>

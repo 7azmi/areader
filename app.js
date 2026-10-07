@@ -3,6 +3,8 @@
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+const baseUrl = new URL('.', document.baseURI || window.location.href);
+const toAppUrl = path => new URL(path, baseUrl).toString();
 const escapeHtml = (value = '') => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const arabicNumber = value => new Intl.NumberFormat('ar-u-nu-arab', {maximumFractionDigits:0}).format(value);
 const normalize = value => value.normalize('NFKD').replace(/[\u064B-\u065F\u0670\u0640]/g, '').replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').toLowerCase();
@@ -38,6 +40,7 @@ const iconButton = (name, label, action, extra = '') => `<button class="icon-but
 const brand = () => `<div class="brand"><span class="brand-mark">${icon('book')}</span><div><span class="brand-name">رِواق</span></div></div>`;
 
 const defaults = {favorites:[], positions:{}, bookmarks:[], notes:[], lastBook:null, settings:{theme:'paper',font:'amiri',size:25,line:2.15,width:740,goal:15}, reading:{}, dark:false};
+const cloneDefaults = () => (typeof structuredClone === 'function' ? structuredClone(defaults) : JSON.parse(JSON.stringify(defaults)));
 let state;
 try {
   const saved = JSON.parse(localStorage.getItem('riwaq-state') || '{}');
@@ -47,7 +50,7 @@ try {
   if (!['paper','white','night'].includes(state.settings.theme)) state.settings.theme = 'paper';
   state.settings.size = Math.max(20, Math.min(34, Number(state.settings.size) || 25));
   state.settings.goal = Math.max(5, Math.min(60, Number(state.settings.goal) || 15));
-} catch { state = structuredClone(defaults); }
+} catch { state = cloneDefaults(); }
 let catalog = [], imported = [], books = [], db, dbFailure = null, currentBook = null, currentMarkdown = '', currentChapters = [], currentChapter = 0;
 let view = 'library', category = 'الكل', query = '', listView = false, toastTimer, searchTimer, saveTimer;
 let focusMode = false, readerPosition = 0, selectedQuote = '', lastActivity = Date.now(), lastReadingTick = Date.now();
@@ -192,7 +195,7 @@ function showDetails(id) {
 }
 async function markdownFor(book) {
   if (markdownCache.has(book.id)) return markdownCache.get(book.id);
-  const text = book.imported ? book.markdown : await fetch(book.file).then(response => {if (!response.ok) throw new Error('Book unavailable');return response.text();});
+  const text = book.imported ? book.markdown : await fetch(toAppUrl(book.file)).then(response => {if (!response.ok) throw new Error('Book unavailable');return response.text();});
   markdownCache.set(book.id,text); return text;
 }
 async function downloadBook(id) {
@@ -492,7 +495,7 @@ async function init() {
     const timeout=setTimeout(() => controller.abort(),15000);
     let loadedCatalog;
     try {
-      const response=await fetch('books/catalog.json',{signal:controller.signal});
+      const response=await fetch(toAppUrl('books/catalog.json'),{signal:controller.signal});
       if (!response.ok) {
         const error=new Error('Catalog unavailable');error.status=response.status;throw error;
       }
